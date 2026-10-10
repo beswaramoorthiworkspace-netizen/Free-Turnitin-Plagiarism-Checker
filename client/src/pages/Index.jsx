@@ -86,6 +86,7 @@ export default function Index() {
   const [options, setOptions] = useState({
     excludeQuotes: false,
     excludeReferences: false,
+    minMatchWords: 5,
   });
   const [result, setResult] = useState(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -223,6 +224,7 @@ export default function Index() {
       excludedWords: result.excludedWords,
       matchedWords: result.matchedWords,
       similarityPercentage: result.similarityPercentage,
+      minMatchWords: result.minMatchWords,
       sources: result.sources,
     };
     const url = URL.createObjectURL(
@@ -418,6 +420,24 @@ export default function Index() {
           </div>
           <div className="analysis-options">
             <span className="options-label">REFINE THIS CHECK</span>
+            <label className="option-toggle match-length-control">
+              <span>Minimum matching phrase</span>
+              <select
+                className="match-length-select"
+                value={options.minMatchWords}
+                onChange={(event) => {
+                  setOptions((current) => ({
+                    ...current,
+                    minMatchWords: Number(event.target.value),
+                  }));
+                  setResult(null);
+                }}
+              >
+                <option value={5}>5 words</option>
+                <option value={8}>8 words</option>
+                <option value={12}>12 words</option>
+              </select>
+            </label>
             <label className="option-toggle">
               <input
                 type="checkbox"
@@ -440,13 +460,13 @@ export default function Index() {
               />
               <span>Exclude bibliography / references section</span>
             </label>
-            <span className="option-explainer">Detected using quotation marks and common bibliography headings.</span>
+            <span className="option-explainer">Longer phrases reduce matches on short common wording. Quotes and reference sections are detected from punctuation and common headings.</span>
           </div>
           <div className="privacy-note"><ShieldCheck size={16} /><span><strong>Private by design.</strong> Your text is compared on this app only and is not saved to a source database.</span></div>
         </section>
 
         <div className="run-row">
-          <div className="method-note"><CircleHelp size={16} /><span>Checks for shared runs of 5 or more words.<br />A match is a signal to review—not a verdict.</span></div>
+          <div className="method-note"><CircleHelp size={16} /><span>Checks for shared runs of {options.minMatchWords} or more words.<br />A match is a signal to review—not a verdict.</span></div>
           <button className="run-button" type="submit" disabled={isChecking || text.trim().length < 100}>
             {isChecking ? <span className="spinner" /> : <BookOpenCheck size={18} />}
             {isChecking ? "Comparing documents..." : "Check for matches"}

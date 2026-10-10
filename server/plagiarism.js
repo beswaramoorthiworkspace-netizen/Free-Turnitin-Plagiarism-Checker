@@ -1,4 +1,4 @@
-const MIN_MATCH_WORDS = 5;
+const DEFAULT_MIN_MATCH_WORDS = 5;
 
 function getExcludedRanges(text, options) {
   const ranges = [];
@@ -27,11 +27,11 @@ function getTokens(text, excludedRanges = []) {
   );
 }
 
-function createNgramIndex(tokens) {
+function createNgramIndex(tokens, minMatchWords) {
   const index = new Map();
-  for (let position = 0; position <= tokens.length - MIN_MATCH_WORDS; position++) {
+  for (let position = 0; position <= tokens.length - minMatchWords; position++) {
     const key = tokens
-      .slice(position, position + MIN_MATCH_WORDS)
+      .slice(position, position + minMatchWords)
       .map(({ word }) => word)
       .join(" ");
     const positions = index.get(key) ?? [];
@@ -75,8 +75,13 @@ function mergeHighlightRanges(sourceResults) {
 export function compareAgainstSources(
   text,
   sources,
-  options = { excludeQuotes: false, excludeReferences: false }
+  options = {
+    excludeQuotes: false,
+    excludeReferences: false,
+    minMatchWords: DEFAULT_MIN_MATCH_WORDS,
+  }
 ) {
+  const minMatchWords = options.minMatchWords ?? DEFAULT_MIN_MATCH_WORDS;
   const allSubmissionTokens = getTokens(text);
   const submissionTokens = getTokens(text, getExcludedRanges(text, options));
   const submissionWords = submissionTokens.map(({ word }) => word);
@@ -93,15 +98,15 @@ export function compareAgainstSources(
       };
     }
     const referenceTokens = getTokens(source.text);
-    const index = createNgramIndex(referenceTokens);
+    const index = createNgramIndex(referenceTokens, minMatchWords);
     const matches = [];
 
     for (
       let submissionStart = 0;
-      submissionStart <= submissionTokens.length - MIN_MATCH_WORDS;
+      submissionStart <= submissionTokens.length - minMatchWords;
     ) {
       const key = submissionWords
-        .slice(submissionStart, submissionStart + MIN_MATCH_WORDS)
+        .slice(submissionStart, submissionStart + minMatchWords)
         .join(" ");
       const referencePositions = index.get(key);
       if (!referencePositions) {
@@ -116,7 +121,7 @@ export function compareAgainstSources(
         referenceTokens.length
       );
       for (const referenceStart of referencePositions) {
-        let length = MIN_MATCH_WORDS;
+        let length = minMatchWords;
         while (
           submissionStart + length < submissionTokens.length &&
           referenceStart + length < referenceTokens.length &&
@@ -132,7 +137,7 @@ export function compareAgainstSources(
         }
       }
 
-      if (bestLength < MIN_MATCH_WORDS) {
+      if (bestLength < minMatchWords) {
         submissionStart++;
         continue;
       }
@@ -179,6 +184,7 @@ export function compareAgainstSources(
   }
 
   return {
+    minMatchWords,
     wordCount: submissionTokens.length,
     excludedWords: allSubmissionTokens.length - submissionTokens.length,
     matchedWords,

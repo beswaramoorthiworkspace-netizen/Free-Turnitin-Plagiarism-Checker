@@ -36,6 +36,20 @@ test("does not count unrelated text or matches shorter than five words", () => {
   assert.deepEqual(result.highlightRanges, []);
 });
 
+test("supports a stricter minimum phrase length to reduce short common matches", () => {
+  const phrase = "shared wording can appear in many everyday";
+  const references = [source("threshold", "Reference", phrase)];
+  const draft = `${phrase} but the remaining explanation is unique.`;
+
+  const broadResult = compareAgainstSources(draft, references, { minMatchWords: 5 });
+  const strictResult = compareAgainstSources(draft, references, { minMatchWords: 8 });
+
+  assert.equal(broadResult.minMatchWords, 5);
+  assert.ok(broadResult.matchedWords > 0);
+  assert.equal(strictResult.minMatchWords, 8);
+  assert.equal(strictResult.matchedWords, 0);
+});
+
 test("counts overlapping matches only once and preserves matching source names", () => {
   const phrase = "local communities need reliable access to clean drinking water";
   const result = compareAgainstSources(phrase, [
@@ -106,6 +120,14 @@ test("validates draft and user-provided reference limits", () => {
   const validSource = source("ref", "Reference", "A reference body.");
 
   assert.equal(checkTextSchema.safeParse({ text: validText, sources: [validSource] }).success, true);
+  assert.equal(
+    checkTextSchema.safeParse({
+      text: validText,
+      sources: [validSource],
+      options: { minMatchWords: 8 },
+    }).success,
+    true
+  );
   assert.equal(checkTextSchema.safeParse({ text: "too short", sources: [validSource] }).success, false);
   assert.equal(checkTextSchema.safeParse({ text: validText, sources: [] }).success, false);
   assert.equal(
@@ -130,6 +152,14 @@ test("validates draft and user-provided reference limits", () => {
     checkTextSchema.safeParse({
       text: validText,
       sources: [{ ...validSource, url: "javascript:alert(1)" }],
+    }).success,
+    false
+  );
+  assert.equal(
+    checkTextSchema.safeParse({
+      text: validText,
+      sources: [validSource],
+      options: { minMatchWords: 7 },
     }).success,
     false
   );

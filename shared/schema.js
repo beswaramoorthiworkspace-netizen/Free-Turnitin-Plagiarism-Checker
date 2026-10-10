@@ -38,7 +38,8 @@ export const checkTextSchema = z.object({
     .object({
       excludeQuotes: z.boolean().default(false),
       excludeReferences: z.boolean().default(false),
+      minMatchWords: z.union([z.literal(5), z.literal(8), z.literal(12)]).default(5),
     })
     .optional()
-    .default({ excludeQuotes: false, excludeReferences: false }),
+    .default({ excludeQuotes: false, excludeReferences: false, minMatchWords: 5 }),
 });

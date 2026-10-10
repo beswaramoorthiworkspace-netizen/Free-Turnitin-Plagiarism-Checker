@@ -89,6 +89,9 @@ button { cursor: pointer; }
 .options-label { color: #829087; font-size: 9px; font-weight: 700; letter-spacing: .8px; }
 .option-toggle { display: inline-flex; align-items: center; gap: 6px; color: #586a5f; font-size: 10px; cursor: pointer; }
 .option-toggle input { margin: 0; accent-color: #3d795f; }
+.match-length-control { gap: 8px; }
+.match-length-select { border: 1px solid #e1e9e2; border-radius: 5px; color: #496b58; background: #fff; padding: 4px 7px; font-size: 10px; }
+.match-length-select:focus { outline: 2px solid #80aa93; outline-offset: 1px; }
 .option-explainer { flex-basis: 100%; color: #9aa49d; font-size: 9px; padding-left: 1px; }
 .privacy-note { display: flex; align-items: flex-start; gap: 8px; padding: 12px 2px 0; color: #77867d; font-size: 10px; line-height: 1.5; }
 .privacy-note svg { flex: none; color: #699179; }

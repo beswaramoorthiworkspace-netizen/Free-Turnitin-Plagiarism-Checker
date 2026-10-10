@@ -8,6 +8,7 @@ ClearMark is a lightweight text-similarity checker for reviewing a draft against
 - Finds exact, case-insensitive runs of five or more words, with punctuation and Unicode-aware tokenization.
 - Shows matching passages side by side, highlights them in the draft, and summarizes matched-word coverage.
 - Optionally excludes quoted passages and a detected bibliography from the score.
+- Lets you choose a 5-, 8-, or 12-word exact-match threshold to tune the balance between shorter overlaps and longer, more distinctive phrases.
 - Records reference titles and optional source links, and exports JSON or a print-ready report that can be saved as PDF.
 - Imports `.txt`, `.md`, `.docx`, and text-based `.pdf` files. Scanned PDFs need OCR and are not supported.
 
@@ -21,12 +22,13 @@ Turnitin's public product pages describe reports over its institutional collecti
 | Source details | Per-reference score and matched text side by side; optional source links |
 | Visual review | Matching passages highlighted in the draft |
 | Exclusions | Optionally skip quoted passages, bibliography text, or selected sources |
+| Match filtering | Choose a minimum exact phrase length of 5, 8, or 12 words |
 | File support | `.txt`, `.md`, `.docx`, and text-based `.pdf` (no OCR) |
 | Export | JSON data or print-to-PDF through the desktop app |
 | Larger source sets | Compare with up to 25 references |
 | Turnitin / open-web corpus search | Not provided; only references supplied by the user are checked |
 
-The feature comparison is based on [Turnitin Similarity](https://www.turnitin.com/products/similarity) and [Turnitin Feedback Studio](https://www.turnitin.com/products/feedback-studio) public product descriptions. ClearMark is not a replacement for their licensed corpus, institutional submission workflow, writing feedback, or AI-writing indicators.
+The review patterns are informed by public product descriptions from [Turnitin Similarity](https://www.turnitin.com/products/similarity), [Turnitin Feedback Studio](https://www.turnitin.com/products/feedback-studio), [Grammarly's plagiarism checker](https://www.grammarly.com/plagiarism-checker), [Quetext](https://www.quetext.com/), and [Copyscape](https://www.copyscape.com/). These services describe capabilities such as originality reports, contextual source review, and comparisons against online or licensed source collections. ClearMark is not a replacement for those corpora, institutional workflows, writing feedback, or AI-writing indicators; its results remain limited to reference text supplied by the user.
 
 ## Run locally
 
@@ -52,7 +54,7 @@ The installer is written to `release/`. It installs ClearMark as a standalone Wi
 
 ## Limits and privacy
 
-A draft can contain up to 50,000 characters; each of up to 10 references can contain up to 100,000 characters. Uploaded files are read in the browser as plain text and sent to the app's comparison endpoint. The comparison has no database persistence and does not send document text to a search provider. As with any locally hosted web app, the operator of the server can access requests sent to that server.
+A draft can contain up to 50,000 characters; each of up to 25 references can contain up to 100,000 characters. Uploaded files are read in the browser as plain text and sent to the app's comparison endpoint. The comparison has no database persistence and does not send document text to a search provider. As with any locally hosted web app, the operator of the server can access requests sent to that server.
 
 ## Development
 
